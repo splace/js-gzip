@@ -60,9 +60,10 @@ ungzip = function (zippedData, loadDataStartCheck) {
     metaData.isText = ((metaData.bitFlag & 0x01) === 0x01);
 
     metaData.date = new Date(dataStream.readNumber(4) * 1000);
+    
     metaData.xflags = dataStream.readNumber(1);
+    
     metaData.OS = ["FAT filesystem (MS-DOS, OS/2, NT/Win32)", "Amiga", "VMS (or OpenVMS)", "Unix", "VM/CMS", "Atari TOS", "HPFS filesystem (OS/2, NT)", "Macintosh", "Z-System", "CP/M", "TOPS-20", "NTFS filesystem (NT)", "QDOS", "Acorn RISCOS"][dataStream.readNumber(1)];
-
 
     if ((metaData.bitFlag & 0x04) === 0x04) {
         // use a stream within a stream for the extra fields chunk
@@ -74,8 +75,6 @@ ungzip = function (zippedData, loadDataStartCheck) {
             metaData.subfieldIDs.append(extraFieldStream.readString(2))
             metaData.subfieldData.append(extraFieldStream.readString(extraFieldStream.readNumber(2)))
         }
-
-
     }
 
     if ((metaData.bitFlag & 0x08) === 0x08) {
@@ -86,10 +85,8 @@ ungzip = function (zippedData, loadDataStartCheck) {
         metaData.comment = dataStream.readZeroTerminatedString();
     }
 
-
     // stop the running calculation on the stream
     dataStream.setRunningFunction()
-
 
     if ((metaData.bitFlag & 0x02) === 0x02) {
         metaData.headerCRC16 = dataStream.readNumber(2)
@@ -99,10 +96,10 @@ ungzip = function (zippedData, loadDataStartCheck) {
         }
     }
 
+    // pass stream to inflater library
     var inflatedDataStream = new Inflator(dataStream)
-
     var inflatedData = ""
-    // get inflated data, but initially do loadDataStartCheck
+    // read inflated data stream, initially with loadDataStartCheck if required
     var nextByte = inflatedDataStream.readByte()
     while (loadDataStartCheck && nextByte > -1 && loadDataStartCheck.length < inflatedData.length) {
         inflatedData += String.fromCharCode(nextByte)
@@ -129,7 +126,7 @@ ungzip = function (zippedData, loadDataStartCheck) {
         throw new Error("Recorded inflated data CRC32 not Correct.");
     }
 
-    // box inflated data string as object to allow meta data to be set to attributes
+    // box the inflated data into a string as object, to allow meta data to be set to attributes
     inflatedData = new String(inflatedData)
     for (item in metaData) {
         inflatedData[item] = metaData[item]
