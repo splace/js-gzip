@@ -23,10 +23,19 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
+// take a string of gzip zipped data, and return unzipped string object with metadata returned in its attributes.
+// optionally abort if the unzipped data doesn't start with the string supplied in the second argument.
+
+// Note: version using all callback events intended.
+
 ungzip = function (zippedData, loadDataStartCheck) {
+     // wrap random acccess string in sequential stream, 
     var dataStream = new ungzip.Stream(zippedData)
+    
     // start a running calculation of CRC32 on the stream
     dataStream.setRunningFunction(ungzip.genCRC32iso)
+    
+    
     if (dataStream.readString(2) != "\x1f\x8b") {
         throw new Error("ID bytes wrong for a Gzip file.");
     }
@@ -56,7 +65,7 @@ ungzip = function (zippedData, loadDataStartCheck) {
 
 
     if ((metaData.bitFlag & 0x04) === 0x04) {
-        // use a stream within a stream just for the extra fields chunk
+        // use a stream within a stream for the extra fields chunk
         var extraChunkLength = dataStream.readNumber(2)
         var extraFieldsStream = new ungzip.Stream(dataStream.readString(extraChunkLength))
         metaData.subfieldIDs = []
@@ -100,7 +109,7 @@ ungzip = function (zippedData, loadDataStartCheck) {
         nextByte = inflatedDataStream.readByte()
     }
     if (loadDataStartCheck && nextByte > -1 && inflatedData != loadDataStartCheck) {
-        return // abort and return if start check not completely matched 
+        return // abort and return if start check not matched 
     }
     while (nextByte > -1) {
         inflatedData += String.fromCharCode(nextByte)
