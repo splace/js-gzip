@@ -101,7 +101,7 @@ ungzip = function (zippedData, loadDataStartCheck) {
     var inflatedData = ""
     // read inflated data stream, initially with loadDataStartCheck if required
     var nextByte = inflatedDataStream.readByte()
-    while (loadDataStartCheck && nextByte > -1 && loadDataStartCheck.length < inflatedData.length) {
+    while (loadDataStartCheck && nextByte > -1 && loadDataStartCheck.length > inflatedData.length) {
         inflatedData += String.fromCharCode(nextByte)
         nextByte = inflatedDataStream.readByte()
     }
@@ -126,7 +126,7 @@ ungzip = function (zippedData, loadDataStartCheck) {
         throw new Error("Recorded inflated data CRC32 not Correct.");
     }
 
-    // box the inflated data into a string as object, to allow meta data to be set to attributes
+    // box the inflated data into a string object, to allow meta data to be set to attributes
     inflatedData = new String(inflatedData)
     for (item in metaData) {
         inflatedData[item] = metaData[item]
