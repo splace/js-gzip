@@ -8,7 +8,7 @@
 </head>
 <body>
 <TEXTAREA ROWS=4 COLS=60>[[compressed]]</TEXTAREA>
-  <button type="button" onclick="this.nextElementSibling.value=this.previousElementSibling.value">Decompress</button>
+  <button type="button" onclick="this.nextElementSibling.value=ungzip(this.previousElementSibling.value)">Decompress</button>
 <TEXTAREA ROWS=4 COLS=60>[[uncompressed]]</TEXTAREA>
 </body>
 </html>
