@@ -7,8 +7,8 @@
 <script type="text/javascript" src="js-gzip.js"></script>
 </head>
 <body>
-<TEXTAREA ROWS=4 COLS=60>hello</TEXTAREA>
-  <button type="button" onclick="this.nextSibling.value='bar'">Decompress</button>
-<TEXTAREA ROWS=4 COLS=60></TEXTAREA>
+<TEXTAREA ROWS=4 COLS=60>[[compressed]]</TEXTAREA>
+  <button type="button" onclick="this.nextElementSibling.value=this.previousElementSibling.value">Decompress</button>
+<TEXTAREA ROWS=4 COLS=60>[[uncompressed]]</TEXTAREA>
 </body>
 </html>
